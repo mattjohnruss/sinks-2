@@ -29,7 +29,7 @@ public:
     void solve();
 
     void output(const unsigned &n_output, std::ostream &outstream) const;
-    void output(const unsigned &n_output, std::vector<FloatT> &outvec) const;
+    void output(const unsigned &n_output, std::vector<FloatT> &outvec, const unsigned offset) const;
 
 private:
     const FloatT Pe;

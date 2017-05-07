@@ -38,7 +38,7 @@ void Solver<FloatT>::construct_system()
     std::vector<T> triplet_list;
 
     // Set epsilon
-    const FloatT ep = static_cast<FloatT>(1)/static_cast<FloatT>(1+N);
+    const FloatT ep = static_cast<FloatT>(1)/static_cast<FloatT>(N+1);
 
     // 1 for inlet BC, 6*N for bulk, 2 for outlet BC
     const unsigned n_entries = 1 + 6*N + 2;
@@ -56,18 +56,18 @@ void Solver<FloatT>::construct_system()
         triplet_list.push_back( T(j, j,       static_cast<FloatT>(1) - Da/Pe) );
         triplet_list.push_back( T(j, j-1,     -exp(Pe*(xi[j] - xi[j-1]))) );
         triplet_list.push_back( T(j, N+1 + j, -Da/Pe) );
-        f[j] = 0;
+        f[j] = static_cast<FloatT>(0);
 
         triplet_list.push_back( T(N+1 + j-1, j,         Da/Pe) );
         triplet_list.push_back( T(N+1 + j-1, N+1 + j,   static_cast<FloatT>(1) + Da/Pe) );
         triplet_list.push_back( T(N+1 + j-1, N+1 + j-1, static_cast<FloatT>(-1)) );
-        f[N+1 + j] = 0;
+        f[N+1 + j] = static_cast<FloatT>(0);
     }
 
     // Outlet BC
     triplet_list.push_back( T(N+1 + N, N,       exp(Pe*(static_cast<FloatT>(N+1) - xi[N]))) );
     triplet_list.push_back( T(N+1 + N, N+1 + N, static_cast<FloatT>(1)) );
-    f[N+1 + N] = 0;
+    f[N+1 + N] = static_cast<FloatT>(0);
 
     // Construct the matrix out of the triplets
     A.setFromTriplets(triplet_list.begin(), triplet_list.end());
@@ -107,7 +107,7 @@ void Solver<FloatT>::output(const unsigned &n_output, std::ostream &outstream) c
 }
 
 template <class FloatT>
-void Solver<FloatT>::output(const unsigned &n_output, std::vector<FloatT> &outvec) const
+void Solver<FloatT>::output(const unsigned &n_output, std::vector<FloatT> &outvec, const unsigned offset) const
 {
     FloatT x = 0;
     FloatT dx = static_cast<FloatT>(N+1)/static_cast<FloatT>(n_output-1);
@@ -116,7 +116,7 @@ void Solver<FloatT>::output(const unsigned &n_output, std::vector<FloatT> &outve
     for(unsigned p = 0; p < n_output; ++p)
     {
         x = p*dx;
-        outvec[p] = solution_helper(x);
+        outvec[offset*n_output + p] = solution_helper(x);
     }
 }
 
