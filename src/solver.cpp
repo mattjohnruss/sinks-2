@@ -107,7 +107,7 @@ void Solver<FloatT>::output(const unsigned &n_output, std::ostream &outstream) c
 }
 
 template <class FloatT>
-void Solver<FloatT>::output(const unsigned &n_output, std::vector<FloatT> &outvec, const unsigned offset) const
+void Solver<FloatT>::output(const unsigned &n_output, std::vector<FloatT> &outvec, const unsigned &offset) const
 {
     FloatT x = 0;
     FloatT dx = static_cast<FloatT>(N+1)/static_cast<FloatT>(n_output-1);
@@ -117,6 +117,34 @@ void Solver<FloatT>::output(const unsigned &n_output, std::vector<FloatT> &outve
     {
         x = p*dx;
         outvec[offset*n_output + p] = solution_helper(x);
+    }
+}
+
+template <class FloatT>
+void Solver<FloatT>::output_corrections(const unsigned &n_output, std::ostream &outstream) const
+{
+    FloatT x = 0;
+    FloatT dx = static_cast<FloatT>(N+1)/static_cast<FloatT>(n_output-1);
+
+    // loop over output points and call our solution helper
+    for(unsigned p = 0; p < n_output; ++p)
+    {
+        x = p*dx;
+        outstream << x << ' ' << C_h(x) + C_a_min_fk(x) + C_aa(x) << std::endl;
+    }
+}
+
+template <class FloatT>
+void Solver<FloatT>::output_corrections(const unsigned &n_output, std::vector<FloatT> &outvec) const
+{
+    FloatT x = 0;
+    FloatT dx = static_cast<FloatT>(N+1)/static_cast<FloatT>(n_output-1);
+
+    // loop over output points and call our solution helper
+    for(unsigned p = 0; p < n_output; ++p)
+    {
+        x = p*dx;
+        outvec[p] = C_h(x) + C_a_min_fk(x) + C_aa(x);
     }
 }
 
@@ -139,6 +167,48 @@ const FloatT Solver<FloatT>::solution_helper(const FloatT &x) const
 
     // return the solution at x using the cell we found
     return u[cell]*exp(Pe*(x - xi[cell])) + u[N+1 + cell];
+}
+
+using std::sqrt;
+using std::exp;
+using std::sinh;
+using std::cosh;
+
+template <class FloatT>
+const FloatT Solver<FloatT>::C_h(const FloatT &x) const
+{
+    static const FloatT phi = sqrt(Da + Pe*Pe/static_cast<FloatT>(4));
+    static const FloatT ep  = static_cast<FloatT>(1)/static_cast<FloatT>(N+1);
+    static const FloatT epm = static_cast<FloatT>(N+1);
+
+    return (ep*exp(static_cast<FloatT>(1)/static_cast<FloatT>(2)*Pe*x)*sinh(phi*(epm - x)))/(static_cast<FloatT>(1)/static_cast<FloatT>(2)*Pe*sinh(epm*phi) + phi*cosh(epm*phi));
+}
+
+template <class FloatT>
+const FloatT Solver<FloatT>::C_h_diff(const FloatT &x) const
+{
+    static const FloatT phi = sqrt(Da + Pe*Pe/static_cast<FloatT>(4));
+    static const FloatT ep  = static_cast<FloatT>(1)/static_cast<FloatT>(N+1);
+    static const FloatT epm = static_cast<FloatT>(N+1);
+
+
+    return ep*exp(static_cast<FloatT>(1)/static_cast<FloatT>(2)*Pe*x)*(static_cast<FloatT>(1)/static_cast<FloatT>(2)*Pe*sinh(phi*(epm - x)) - phi*cosh(phi*(epm - x)))/(static_cast<FloatT>(1)/static_cast<FloatT>(2)*Pe*epm*sinh(phi) + phi*cosh(epm*phi));
+}
+
+template <class FloatT>
+const FloatT Solver<FloatT>::C_a_min_fk(const FloatT &x) const
+{
+    static const FloatT epm = static_cast<FloatT>(N+1);
+
+    return epm*Da*(static_cast<FloatT>(1)/static_cast<FloatT>(2)*C_h(static_cast<FloatT>(0)) + static_cast<FloatT>(1)/static_cast<FloatT>(12)*C_h_diff(static_cast<FloatT>(0)))*C_h(x);
+}
+
+template <class FloatT>
+const FloatT Solver<FloatT>::C_aa(const FloatT &x) const
+{
+    static const FloatT epm = static_cast<FloatT>(N+1);
+
+    return static_cast<FloatT>(1)/static_cast<FloatT>(4)*pow(Da*epm*C_h(static_cast<FloatT>(0)),2)*C_h(x);
 }
 
 template class Solver<double>;

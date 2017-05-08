@@ -29,7 +29,10 @@ public:
     void solve();
 
     void output(const unsigned &n_output, std::ostream &outstream) const;
-    void output(const unsigned &n_output, std::vector<FloatT> &outvec, const unsigned offset) const;
+    void output(const unsigned &n_output, std::vector<FloatT> &outvec, const unsigned &offset) const;
+
+    void output_corrections(const unsigned &n_output, std::ostream &outstream) const;
+    void output_corrections(const unsigned &n_output, std::vector<FloatT> &outvec) const;
 
 private:
     const FloatT Pe;
@@ -48,6 +51,11 @@ private:
     //Eigen::UmfPackLU<Eigen::SparseMatrix<FloatT> > linear_solver;
 
     const FloatT solution_helper(const FloatT &x) const;
+
+    const FloatT C_h(const FloatT &x) const;
+    const FloatT C_h_diff(const FloatT &x) const;
+    const FloatT C_a_min_fk(const FloatT &x) const;
+    const FloatT C_aa(const FloatT &x) const;
 };
 
 #endif
