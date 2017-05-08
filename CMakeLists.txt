@@ -12,9 +12,8 @@ find_package(OpenMP REQUIRED)
 include_directories(${SUPERLU_INCLUDES})
 include_directories(${sinks++2_SOURCE_DIR}/include)
 
-add_executable(main src/main.cpp
-                    src/solver.cpp)
+add_executable(main src/main.cpp src/solver.cpp)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} -std=c++14 -Wall -pedantic -O3")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} -DNDEBUG -march=native -std=c++14 -Wall -pedantic -O3")
 
 target_link_libraries(main Eigen3::Eigen umfpack superlu)
