@@ -81,8 +81,8 @@ int main(int argc, char **argv)
                     xi[j] = uniform_dist(rd);
                 }
 
-                // must sort the sinks if uniformly distributed
-                std::sort(xi.begin(),xi.end());
+                // must sort the sinks if uniformly distributed, excluding the first and last entries
+                std::sort(xi.begin()+1,xi.end()-1);
             }
         }
 
