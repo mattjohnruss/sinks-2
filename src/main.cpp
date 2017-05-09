@@ -20,7 +20,7 @@ int main(int argc, char **argv)
     const double Da = std::atof(argv[3]);
     const unsigned n_output = std::atoi(argv[4])*(N+1) + 1;
     const unsigned runs = std::atoi(argv[5]);
-    double std_dev = 0.01;
+    double std_dev = 0.1;
     char sink_dist = 'n';
 
     // see if sinks are randomly distributed
