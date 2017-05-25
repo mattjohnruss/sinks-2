@@ -96,7 +96,7 @@ template <class FloatT>
 void Solver<FloatT>::output(const unsigned &n_output, std::ostream &outstream) const
 {
     FloatT x = 0;
-    FloatT dx = static_cast<FloatT>(N+1)/static_cast<FloatT>(n_output-1);
+    const FloatT dx = static_cast<FloatT>(N+1)/static_cast<FloatT>(n_output-1);
 
     // loop over output points and call our solution helper
     for(unsigned p = 0; p < n_output; ++p)
@@ -110,7 +110,7 @@ template <class FloatT>
 void Solver<FloatT>::output(const unsigned &n_output, std::vector<FloatT> &outvec, const unsigned &offset) const
 {
     FloatT x = 0;
-    FloatT dx = static_cast<FloatT>(N+1)/static_cast<FloatT>(n_output-1);
+    const FloatT dx = static_cast<FloatT>(N+1)/static_cast<FloatT>(n_output-1);
 
     // loop over output points and call our solution helper
     for(unsigned p = 0; p < n_output; ++p)
@@ -124,7 +124,7 @@ template <class FloatT>
 void Solver<FloatT>::output_corrections(const unsigned &n_output, std::ostream &outstream) const
 {
     FloatT x = 0;
-    FloatT dx = static_cast<FloatT>(N+1)/static_cast<FloatT>(n_output-1);
+    const FloatT dx = static_cast<FloatT>(N+1)/static_cast<FloatT>(n_output-1);
 
     // loop over output points and call our solution helper
     for(unsigned p = 0; p < n_output; ++p)
@@ -138,7 +138,7 @@ template <class FloatT>
 void Solver<FloatT>::output_corrections(const unsigned &n_output, std::vector<FloatT> &outvec) const
 {
     FloatT x = 0;
-    FloatT dx = static_cast<FloatT>(N+1)/static_cast<FloatT>(n_output-1);
+    const FloatT dx = static_cast<FloatT>(N+1)/static_cast<FloatT>(n_output-1);
 
     // loop over output points and call our solution helper
     for(unsigned p = 0; p < n_output; ++p)
