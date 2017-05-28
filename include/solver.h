@@ -34,6 +34,9 @@ public:
     void output_corrections(const unsigned &n_output, std::ostream &outstream) const;
     void output_corrections(const unsigned &n_output, std::vector<FloatT> &outvec) const;
 
+    void output_corrections_classical(const unsigned &n_output, std::ostream &outstream) const;
+    void output_corrections_classical(const unsigned &n_output, std::vector<FloatT> &outvec) const;
+
 private:
     const FloatT Pe;
     const FloatT Da;

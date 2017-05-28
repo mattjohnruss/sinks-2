@@ -44,8 +44,9 @@ int main(int argc, char **argv)
     // store all runs in a contiguous vector: must be careful to offset indices
     std::vector<double> cs(runs*n_output);
 
-    // only need one set of corrections regardless of runs
+    // only need one set of corrections and classical corrections regardless of runs
     std::vector<double> corrections(n_output);
+    std::vector<double> corrections_classical(n_output);
 
     // loop over the runs in parallel
     #pragma omp parallel for
@@ -99,6 +100,7 @@ int main(int argc, char **argv)
     std::vector<double> xi(N+2,0);
     Solver<double> solver(Pe,Da,N,xi);
     solver.output_corrections(n_output, corrections);
+    solver.output_corrections_classical(n_output, corrections_classical);
 
     // sensible output format for Eigen matrices
     const Eigen::IOFormat plain_fmt(8, Eigen::DontAlignCols);
@@ -107,6 +109,7 @@ int main(int argc, char **argv)
     // ~zero overhead!
     Eigen::Map<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> > cs_mat(&cs[0], runs, n_output);
     Eigen::Map<Eigen::Matrix<double, 1, Eigen::Dynamic, Eigen::RowMajor> > corrections_mat(&corrections[0], n_output);
+    Eigen::Map<Eigen::Matrix<double, 1, Eigen::Dynamic, Eigen::RowMajor> > corrections_classical_mat(&corrections_classical[0], n_output);
 
     std::ofstream outfile;
 
@@ -122,6 +125,11 @@ int main(int argc, char **argv)
         // output the residual for each run
         outfile.open("cs_residual.dat");
         outfile << (cs_mat.rowwise() - corrections_mat).format(plain_fmt);
+        outfile.close();
+
+        // output the residual according to the classical periodic homogenization for each run
+        outfile.open("cs_residual_classical.dat");
+        outfile << (cs_mat.rowwise() - corrections_classical_mat).format(plain_fmt);
         outfile.close();
     }
     if(runs > 1)

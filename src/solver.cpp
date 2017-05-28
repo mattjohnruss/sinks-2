@@ -149,6 +149,38 @@ void Solver<FloatT>::output_corrections(const unsigned &n_output, std::vector<Fl
 }
 
 template <class FloatT>
+void Solver<FloatT>::output_corrections_classical(const unsigned &n_output, std::ostream &outstream) const
+{
+    const FloatT epm = static_cast<FloatT>(N+1);
+
+    FloatT x = 0;
+    const FloatT dx = static_cast<FloatT>(N+1)/static_cast<FloatT>(n_output-1);
+
+    // loop over output points and call our solution helper
+    for(unsigned p = 0; p < n_output; ++p)
+    {
+        x = p*dx;
+        outstream << x << ' ' << C_h(x) + static_cast<FloatT>(1)/static_cast<FloatT>(2)*epm*Da*C_h(0)*C_h(x) << std::endl;
+    }
+}
+
+template <class FloatT>
+void Solver<FloatT>::output_corrections_classical(const unsigned &n_output, std::vector<FloatT> &outvec) const
+{
+    const FloatT epm = static_cast<FloatT>(N+1);
+
+    FloatT x = 0;
+    const FloatT dx = static_cast<FloatT>(N+1)/static_cast<FloatT>(n_output-1);
+
+    // loop over output points and call our solution helper
+    for(unsigned p = 0; p < n_output; ++p)
+    {
+        x = p*dx;
+        outvec[p] = C_h(x) + static_cast<FloatT>(1)/static_cast<FloatT>(2)*epm*Da*C_h(0)*C_h(x);
+    }
+}
+
+template <class FloatT>
 const FloatT Solver<FloatT>::solution_helper(const FloatT &x) const
 {
     using std::exp;
