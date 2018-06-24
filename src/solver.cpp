@@ -61,7 +61,7 @@ void Solver<FloatT>::construct_system()
         triplet_list.push_back( T(N+1 + j-1, j,         Da/Pe) );
         triplet_list.push_back( T(N+1 + j-1, N+1 + j,   static_cast<FloatT>(1) + Da/Pe) );
         triplet_list.push_back( T(N+1 + j-1, N+1 + j-1, static_cast<FloatT>(-1)) );
-        f[N+1 + j] = static_cast<FloatT>(0);
+        f[N+1 + j-1] = static_cast<FloatT>(0);
     }
 
     // Outlet BC
