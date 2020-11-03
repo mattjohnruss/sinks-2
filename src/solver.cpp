@@ -181,6 +181,19 @@ void Solver<FloatT>::output_corrections_classical(const unsigned &n_output, std:
 }
 
 template <class FloatT>
+const FloatT Solver<FloatT>::total_uptake() const
+{
+    //return u.sum();
+    return u.segment(1, N).sum() + u.segment(N+2, N).sum();
+}
+
+template <class FloatT>
+const FloatT Solver<FloatT>::deriv_at_end() const
+{
+    return Pe*u(N)*std::exp(Pe*(static_cast<FloatT>(N+1) - xi[N]));
+}
+
+template <class FloatT>
 const FloatT Solver<FloatT>::solution_helper(const FloatT &x) const
 {
     using std::exp;

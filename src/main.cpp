@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <random>
+#include <iomanip>
 
 int main(int argc, char **argv)
 {
@@ -44,9 +45,14 @@ int main(int argc, char **argv)
     // store all runs in a contiguous vector: must be careful to offset indices
     std::vector<double> cs(runs*n_output);
 
+    Eigen::VectorXd totals(runs);
+    Eigen::VectorXd totals_other_method(runs);
+
     // only need one set of corrections and classical corrections regardless of runs
     std::vector<double> corrections(n_output);
     std::vector<double> corrections_classical(n_output);
+
+    std::ofstream total_file("total.dat");
 
     // loop over the runs in parallel
     #pragma omp parallel for
@@ -94,6 +100,9 @@ int main(int argc, char **argv)
         solver.construct_system();
         solver.solve();
         solver.output(n_output, cs, r);
+
+        totals(r) = solver.total_uptake();
+        totals_other_method(r) = 1.0/Da*(1.0/static_cast<double>(N+1) + solver.deriv_at_end());
     }
 
     // make a dummy solver here to just output the corrections
@@ -104,6 +113,7 @@ int main(int argc, char **argv)
 
     // sensible output format for Eigen matrices
     const Eigen::IOFormat plain_fmt(8, Eigen::DontAlignCols);
+    const Eigen::IOFormat plain_fmt_16(16, Eigen::DontAlignCols);
 
     // map our output to Eigen matrices - allows use of matrix methods with
     // ~zero overhead!
@@ -132,6 +142,17 @@ int main(int argc, char **argv)
         outfile << (cs_mat.rowwise() - corrections_classical_mat).format(plain_fmt);
         outfile.close();
     }
+
+    // always output the totals
+    outfile.open("total.dat");
+    outfile << totals.format(plain_fmt_16);
+    outfile.close();
+
+    // always output the totals using the other method based on the gradient at the end
+    outfile.open("total_other_method.dat");
+    outfile << totals_other_method.format(plain_fmt_16);
+    outfile.close();
+
     if(runs > 1)
     {
         // calculate the mean and covariance using Eigen tricks
@@ -162,6 +183,11 @@ int main(int argc, char **argv)
         // output the transverse covariance
         outfile.open("tcov.dat");
         outfile << cov.rowwise().reverse().diagonal().transpose().format(plain_fmt);
+        outfile.close();
+
+        outfile.open("mean_total.dat");
+        outfile << std::setprecision(16);
+        outfile << totals.mean();
         outfile.close();
     }
 }

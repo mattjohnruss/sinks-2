@@ -37,6 +37,9 @@ public:
     void output_corrections_classical(const unsigned &n_output, std::ostream &outstream) const;
     void output_corrections_classical(const unsigned &n_output, std::vector<FloatT> &outvec) const;
 
+    const FloatT total_uptake() const;
+    const FloatT deriv_at_end() const;
+
 private:
     const FloatT Pe;
     const FloatT Da;
